@@ -64,7 +64,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
 
-df = pd.read_csv('share_of_energy_from_renewable_sources.csv', encoding='latin-1', sep=';')
+df = pd.read_csv('share_of_renewable_energy_in_gross_final_energy_consumption_by_sector.csv', encoding='latin-1', sep=';')
 print(df.columns.tolist())
 df = df.dropna(subset=['OBS_VALUE'])
 
