@@ -96,4 +96,4 @@ for ax, sec in zip(axes2, sectors):
 
 plt.tight_layout()
 plt.savefig('emissoes_outliers.png', dpi=150, bbox_inches='tight')
-print("Gráfico 2 guardado: emissoes_outliers.png")
+print("Gráfico guardado: emissoes_outliers.png")
