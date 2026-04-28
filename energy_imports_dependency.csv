@@ -1,22 +1,22 @@
-STRUCTURE,STRUCTURE_ID,STRUCTURE_NAME,freq,Time frequency,siec,Standard international energy product classification (SIEC),unit,Unit of measure,geo,Geopolitical entity (reporting),TIME_PERIOD,Time,OBS_VALUE,Observation value,OBS_FLAG,Observation status (Flag) V2 structure,CONF_STATUS,Confidentiality status (flag)
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2004,,83.933,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2005,,88.561,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2006,,83.967,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2007,,81.519,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2008,,83.623,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2009,,81.434,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2010,,75.220,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2011,,77.792,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2012,,79.461,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2013,,73.347,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2014,,70.234,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2015,,76.293,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2016,,72.241,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2017,,77.965,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2018,,75.657,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2019,,73.875,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2020,,65.282,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2021,,66.925,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2022,,71.274,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2023,,66.866,,,,,
-dataflow,ESTAT:NRG_IND_ID(1.0),Energy imports dependency,A,Annual,TOTAL,Total,PC,Percentage,PT,Portugal,2024,,64.524,,,,,
+TIME_PERIOD;OBS_VALUE
+2004;83.933
+2005;88.561
+2006;83.967
+2007;81.519
+2008;83.623
+2009;81.434
+2010;75.220
+2011;77.792
+2012;79.461
+2013;73.347
+2014;70.234
+2015;76.293
+2016;72.241
+2017;77.965
+2018;75.657
+2019;73.875
+2020;65.282
+2021;66.925
+2022;71.274
+2023;66.866
+2024;64.524
