@@ -2,51 +2,40 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
-# ── Limpeza de nulos ──────────────────────────────────────────────────────────
 df = pd.read_csv("data/eu27_energy_dataset_2004_2023.csv", sep=";")
 
-# Remover coluna com muitos nulos
+# ── 1. Remover coluna com muitos nulos ────────────────────────────────────────
 df = df.drop(columns=["ghg_off-shore_kt_co2eq"])
 
-# Função de média ponderada
-def weighted_mean(series, weights):
-    mask = series.notna()
-    return np.average(series[mask], weights=weights[mask])
+# ── 2. Converter zeros falsos para NaN ────────────────────────────────────────
+colunas_zeros_falsos = ['public_rd_investment', 'private_rd_investment', 'clean_energy_patents']
+df[colunas_zeros_falsos] = df[colunas_zeros_falsos].replace(0, np.nan)
 
-# Preencher nulos com média ponderada pela população
-for col in df.columns:
-    if df[col].isnull().sum() > 0 and df[col].dtype != "object":
-        media_pond = weighted_mean(df[col], df["population"])
-        df[col] = df[col].fillna(media_pond)
-
-df.to_csv("dados_limpos.csv", index=False, sep=";")
-
-# ── Deteção e substituição de outliers ───────────────────────────────────────
-df = pd.read_csv("dados_limpos.csv", sep=";")
-
-# Separar colunas numéricas (excluir country e year)
+# ── 3. Preencher NaN com média do país ───────────────────────────────────────
 colunas_numericas = df.select_dtypes(include=[np.number]).columns.tolist()
-colunas_numericas = [c for c in colunas_numericas if c != 'year']
-
-df_limpo = df.copy()
 
 for col in colunas_numericas:
+    media_pais = df.groupby('country')[col].transform('mean')
+    df[col] = df[col].fillna(media_pais)
+
+# ── 4. Preencher NaN restantes com média global ───────────────────────────────
+# (países que não têm qualquer dado numa coluna, ex: Bulgária em public_rd_investment)
+for col in colunas_numericas:
+    df[col] = df[col].fillna(df[col].mean())
+
+# ── 5. Substituir outliers pela média do país ─────────────────────────────────
+colunas_outliers = [c for c in colunas_numericas if c != 'year']
+
+for col in colunas_outliers:
     z_col = df[col].groupby(df['country']).transform(
         lambda x: np.abs(stats.zscore(x, nan_policy='omit'))
     )
     mask = z_col > 3
-    medias_pais = df[col].groupby(df['country']).transform('mean')
-    df_limpo.loc[mask, col] = medias_pais[mask]
+    media_pais = df[col].groupby(df['country']).transform('mean')
+    df.loc[mask, col] = media_pais[mask]
 
-# Mostrar resumo
-df_numerico = df[colunas_numericas]
-z_scores = df_numerico.groupby(df['country']).transform(
-    lambda x: np.abs(stats.zscore(x, nan_policy='omit'))
-)
-contagem_outliers = (z_scores > 3).sum()
-print(f"Total de linhas com pelo menos um outlier: {(z_scores > 3).any(axis=1).sum()}")
-print("Outliers por coluna:")
-print(contagem_outliers[contagem_outliers > 0])
-
-df_limpo.to_csv('energy_dataset_clean.csv', index=False, sep=';')
-print("Ficheiro guardado: energy_dataset_clean.csv")
+# ── 6. Guardar ────────────────────────────────────────────────────────────────
+df.to_csv("energy_dataset_clean.csv", index=False, sep=";")
+print("Ficheiro guardado")
+print(f"Shape: {df.shape}")
+print(f"Nulos restantes: {df.isnull().sum().sum()}")
