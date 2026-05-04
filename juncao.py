@@ -8,6 +8,10 @@ EU27 = [
     'Slovakia', 'Slovenia', 'Spain', 'Sweden'
 ]
 
+EU_ISO = ['AUT','BEL','BGR','HRV','CYP','CZE','DNK','EST','FIN','FRA',
+          'DEU','GRC','HUN','IRL','ITA','LVA','LTU','LUX','MLT','NLD',
+          'POL','PRT','ROU','SVK','SVN','ESP','SWE']
+
 path = 'data/'
 
 # 1. OWID CO2
@@ -54,11 +58,63 @@ inv_agg.rename(columns={
     'inventions': 'clean_energy_patents'
 }, inplace=True)
 
-# 6. Merge
+# 6. EDGAR — Emissões totais de GHG (kt CO2eq)
+edgar_total = pd.read_excel(
+    path + 'edgar_dados.xlsx',
+    sheet_name='TOTALS by NUTS2',
+    skiprows=6
+)
+edgar_total = edgar_total[edgar_total['ISO'].isin(EU_ISO)].copy()
+edgar_total['Country'] = edgar_total['Country'].replace({
+    'Spain and Andorra':                  'Spain',
+    'France and Monaco':                  'France',
+    'Italy, San Marino and the Holy See': 'Italy'
+})
+year_cols = [f'Y_{y}' for y in range(2004, 2024)]
+edgar_total = edgar_total[['Country'] + year_cols]
+edgar_total = edgar_total.melt(id_vars='Country', var_name='year', value_name='ghg_total_kt_co2eq')
+edgar_total['year'] = edgar_total['year'].str.replace('Y_', '').astype(int)
+edgar_total.rename(columns={'Country': 'country'}, inplace=True)
+edgar_total = edgar_total.groupby(['country', 'year'])['ghg_total_kt_co2eq'].sum().reset_index()
+
+# 7. EDGAR — Emissões por setor (kt CO2eq), uma coluna por setor
+edgar_sec = pd.read_excel(
+    path + 'edgar_dados.xlsx',
+    sheet_name='TOTALS by NUTS2 and Sector',
+    skiprows=6
+)
+edgar_sec = edgar_sec[edgar_sec['ISO'].isin(EU_ISO)].copy()
+edgar_sec['Country'] = edgar_sec['Country'].replace({
+    'Spain and Andorra':                  'Spain',
+    'France and Monaco':                  'France',
+    'Italy, San Marino and the Holy See': 'Italy'
+})
+edgar_sec = edgar_sec[['Country', 'Sector'] + year_cols]
+edgar_sec = edgar_sec.melt(id_vars=['Country', 'Sector'], var_name='year', value_name='ghg_kt_co2eq')
+edgar_sec['year'] = edgar_sec['year'].str.replace('Y_', '').astype(int)
+edgar_sec.rename(columns={'Country': 'country', 'Sector': 'sector'}, inplace=True)
+edgar_sec = edgar_sec.groupby(['country', 'year', 'sector'])['ghg_kt_co2eq'].sum().reset_index()
+
+# Pivotar setores para colunas (prefixo ghg_)
+edgar_sec_pivot = edgar_sec.pivot_table(
+    index=['country', 'year'],
+    columns='sector',
+    values='ghg_kt_co2eq',
+    aggfunc='sum'
+).reset_index()
+edgar_sec_pivot.columns.name = None
+edgar_sec_pivot.columns = [
+    f'ghg_{c.lower().replace(" ", "_")}_kt_co2eq' if c not in ['country', 'year'] else c
+    for c in edgar_sec_pivot.columns
+]
+
+# 8. Merge
 df = co2.merge(ann, on=['country', 'year'], how='outer')
 df = df.merge(bal_pivot, on=['country', 'year'], how='outer')
 df = df.merge(ren, on=['country', 'year'], how='outer')
 df = df.merge(inv_agg, on=['country', 'year'], how='left')
+df = df.merge(edgar_total, on=['country', 'year'], how='left')
+df = df.merge(edgar_sec_pivot, on=['country', 'year'], how='left')
 df = df[df['country'].isin(EU27) & df['year'].between(2004, 2023)]
 df = df.sort_values(['country', 'year']).reset_index(drop=True)
 
