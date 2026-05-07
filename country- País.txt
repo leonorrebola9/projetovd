@@ -1,0 +1,32 @@
+country- País
+Ano- 2004 a 2023
+CO2 - emissões totais de co2, por milhões de toneladas 
+CO2 - emissões de co2 por habitante por toneladas
+primary_energy_consumption - energia primária consumida no país por TWh
+population - população
+gdp - pib em dólares americanos 
+anual_co2_tonnes - emissões brutas de co2 em toneladas (total de co2 emitido por atividades humanas)
+energy_available_final_consumption_ktoe - Energia disponível para ser consumidad pelo utilizador final em quilotoneladas equivalente de petróleo (oq consomes de petróleo)
+final_energy_consumption_ktoe - energia efetivamente consumida efetivamente pleo utilizador final (indústria, habitação e serviços) em quilotoneladas
+gross_available_energy_ktoe - energia total disponível no país (produção + importações - exportações - variação de stocks) em ktoe
+net_energy_supply_ktoe - fornecimento líquido de energia após deduzir perdas de transformação
+primary_energy_consumption_ktoe - consumo de energia primária (estimados)
+renewable_share_pct - percentagem de energias renováveis no mix energético total do país
+public_rd_investment - investimento público em investigação e desenvolvimento em tecnologias energéticas limpas em milhões de euros
+private_rd_investment - investimento privado em investigação e desenvolvimento em tecnologias energéticas limpas em milhões de euros
+clean_energy_patents - número de patentes registadas em energia limpa
+ghg_total - emissões totais de gases com efeito estufa em kt co2
+ghg_agriculture -  agricultura
+ghg_buildings- edifícios
+ghg_dom_avi -aviação doméstica
+ghg_dom_ship - navegação marítima domestica
+ghg_energy - setor energético ( produção de eletricidade e calor)
+ghg_indirect - emissões indiretas de co2 (compostos orgânicos oxidação de co)
+ghg_industry - indústria transformadora e construção
+ghg_transport - transportes terrestres
+ghg_waste -  resíduos
+
+
+
+IDEIAS
+Emissoes de co2 com e sem humanos (co2 e anual_co2_tonnes)
