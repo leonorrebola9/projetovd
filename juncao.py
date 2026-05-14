@@ -58,41 +58,47 @@ inv_agg.rename(columns={
     'inventions': 'clean_energy_patents'
 }, inplace=True)
 
-# 6. EDGAR — Emissões totais de GHG (kt CO2eq)
-edgar_total = pd.read_excel(
-    path + 'edgar_dados.xlsx',
-    sheet_name='TOTALS by NUTS2',
-    skiprows=6
-)
-edgar_total = edgar_total[edgar_total['ISO'].isin(EU_ISO)].copy()
-edgar_total['Country'] = edgar_total['Country'].replace({
+# Mapeamento ISO → nome do país (EU27)
+iso_to_country = dict(zip(EU_ISO, EU27))
+
+year_cols = [f'Y_{y}' for y in range(2004, 2024)]
+
+COUNTRY_FIXES = {
     'Spain and Andorra':                  'Spain',
     'France and Monaco':                  'France',
     'Italy, San Marino and the Holy See': 'Italy'
-})
-year_cols = [f'Y_{y}' for y in range(2004, 2024)]
+}
+
+
+def load_edgar_sheet(sheet_name):
+    """Carrega uma sheet EDGAR, filtra EU27 e devolve apenas linhas NUTS2 reais
+    (exclui linhas sem código subnacional, que são totais duplicados ou vazios)."""
+    df = pd.read_excel(path + 'edgar_dados.xlsx', sheet_name=sheet_name, skiprows=6)
+    df = df[df['ISO'].isin(EU_ISO)].copy()
+    df['Country'] = df['Country'].replace(COUNTRY_FIXES)
+    # Manter só linhas com código NUTS2 definido (exclui NaN = agregado nacional redundante)
+    df = df[df['Subnational code *'].notna()]
+    return df
+
+
+# 6. EDGAR — Emissões totais de GHG (kt CO2eq)
+#    Soma das regiões NUTS2 → valor por país e por ano
+edgar_total = load_edgar_sheet('TOTALS by NUTS2')
 edgar_total = edgar_total[['Country'] + year_cols]
 edgar_total = edgar_total.melt(id_vars='Country', var_name='year', value_name='ghg_total_kt_co2eq')
 edgar_total['year'] = edgar_total['year'].str.replace('Y_', '').astype(int)
 edgar_total.rename(columns={'Country': 'country'}, inplace=True)
+# Soma das regiões NUTS2 por país e por ano
 edgar_total = edgar_total.groupby(['country', 'year'])['ghg_total_kt_co2eq'].sum().reset_index()
 
 # 7. EDGAR — Emissões por setor (kt CO2eq), uma coluna por setor
-edgar_sec = pd.read_excel(
-    path + 'edgar_dados.xlsx',
-    sheet_name='TOTALS by NUTS2 and Sector',
-    skiprows=6
-)
-edgar_sec = edgar_sec[edgar_sec['ISO'].isin(EU_ISO)].copy()
-edgar_sec['Country'] = edgar_sec['Country'].replace({
-    'Spain and Andorra':                  'Spain',
-    'France and Monaco':                  'France',
-    'Italy, San Marino and the Holy See': 'Italy'
-})
+#    Soma das regiões NUTS2 → valor por país, ano e setor
+edgar_sec = load_edgar_sheet('TOTALS by NUTS2 and Sector')
 edgar_sec = edgar_sec[['Country', 'Sector'] + year_cols]
 edgar_sec = edgar_sec.melt(id_vars=['Country', 'Sector'], var_name='year', value_name='ghg_kt_co2eq')
 edgar_sec['year'] = edgar_sec['year'].str.replace('Y_', '').astype(int)
 edgar_sec.rename(columns={'Country': 'country', 'Sector': 'sector'}, inplace=True)
+# Soma das regiões NUTS2 por país, ano e setor
 edgar_sec = edgar_sec.groupby(['country', 'year', 'sector'])['ghg_kt_co2eq'].sum().reset_index()
 
 # Pivotar setores para colunas (prefixo ghg_)
@@ -118,4 +124,6 @@ df = df.merge(edgar_sec_pivot, on=['country', 'year'], how='left')
 df = df[df['country'].isin(EU27) & df['year'].between(2004, 2023)]
 df = df.sort_values(['country', 'year']).reset_index(drop=True)
 
-df.to_csv(path + 'eu27_energy_dataset_2004_2023.csv', index=False, sep=';')
+df.to_csv(path + 'eu27_energy_dataset.csv', index=False, sep=';')
+print("Dataset guardado:", df.shape)
+print("Colunas GHG:", [c for c in df.columns if 'ghg' in c])

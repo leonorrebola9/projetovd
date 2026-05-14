@@ -2,10 +2,14 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
-df = pd.read_csv("data/eu27_energy_dataset_2004_2023.csv", sep=";")
+df = pd.read_csv("data/eu27_energy_dataset.csv", sep=";")
 
 # ── 1. Remover coluna com muitos nulos ────────────────────────────────────────
-df = df.drop(columns=["ghg_off-shore_kt_co2eq"])
+# Nota: nome da coluna gerado automaticamente com base no setor "Off-shore"
+off_shore_col = [c for c in df.columns if 'off' in c.lower() and 'shore' in c.lower()]
+if off_shore_col:
+    df = df.drop(columns=off_shore_col)
+    print(f"Coluna(s) removida(s): {off_shore_col}")
 
 # ── 2. Converter zeros falsos para NaN ────────────────────────────────────────
 colunas_zeros_falsos = ['public_rd_investment', 'private_rd_investment', 'clean_energy_patents']
@@ -35,7 +39,8 @@ for col in colunas_outliers:
     df.loc[mask, col] = media_pais[mask]
 
 # ── 6. Guardar ────────────────────────────────────────────────────────────────
-df.to_csv("energy_dataset_clean.csv", index=False, sep=";")
+df.to_csv("energy_dataset_clean1.csv", index=False, sep=";")
 print("Ficheiro guardado")
 print(f"Shape: {df.shape}")
 print(f"Nulos restantes: {df.isnull().sum().sum()}")
+print(f"Colunas GHG: {[c for c in df.columns if 'ghg' in c]}")
